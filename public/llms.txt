@@ -1,0 +1,14 @@
+# dong4j.dev
+
+> This website is dong4j's personal website. It is built with Astro and deployed on Cloudflare Pages.
+
+## Pages
+
+- [Home](https://dong4j.dev)
+- [Blog](https://dong4j.dev/blog)
+- [Projects](https://dong4j.dev/projects)
+- [About](https://dong4j.dev/about)
+
+# Docs
+
+- [Github](https://github.com/dong4j/dong4j.dev) : Source code of this website.

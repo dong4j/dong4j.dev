@@ -1,0 +1,22 @@
+[
+    {
+      "url": "https://x.com/dong4j",
+      "icon": "ri:twitter-x-line",
+      "name": "X"
+    },
+    {
+      "url": "https://github.com/dong4j",
+      "icon": "ri:github-line",
+      "name": "GitHub"
+    },
+    {
+      "url": "https://www.perplexity.ai/?s=O&q=Who%20is%20dong4j%20from%20https%3A%2F%2Fgithub.com%2Fdong4j",
+      "icon": "ri:perplexity-fill",
+      "name": "Perplexity"
+    },
+    {
+      "url": "mailto:dong4j@gmail.com?subject=[YOUR_SUBJECT_HERE] ~ dong4j.dev",
+      "icon": "mdi:email",
+      "name": "Email"
+    }
+]

@@ -1,0 +1,808 @@
+# dong4j.dev
+
+> This website is dong4j's personal website. It is built with Astro and deployed on Cloudflare Pages.
+
+## Pages
+
+- [Home](https://dong4j.dev)
+- [Blog](https://dong4j.dev/blog)
+- [Projects](https://dong4j.dev/projects)
+- [About](https://dong4j.dev/about)
+
+# Docs
+
+- [Github](https://github.com/dong4j/dong4j.dev) : Source code of this website.
+
+# Full Content
+
+
+## Page: projects.astro
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import collections from '../assets/hf_collections.json';
+import projects from '../assets/github.json' assert { type: "json" };
+import rawModels from '../assets/hf_models.json';
+import rawDatasets from '../assets/hf_datasets.json';
+
+interface HFModel {
+  id: string;
+  author: string;
+  title: string;
+  description: string;
+  url: string;
+  lastModified: string;
+  model_type: string;
+  base_model: string[];
+}
+
+interface HFDataset {
+  id: string;
+  author: string;
+  title: string;
+  url: string;
+  lastModified: string;
+}
+
+const models = rawModels as HFModel[];
+const datasets = rawDatasets as HFDataset[];
+
+// Group projects by author
+const githubByAuthor = projects.reduce((acc, project) => {
+  const author = project.author || 'Unknown';
+  if (!acc[author]) acc[author] = [];
+  acc[author].push(project);
+  return acc;
+}, {} as Record<string, typeof projects>);
+
+const modelsByAuthor = models.reduce((acc, model) => {
+  const author = model.author || 'Unknown';
+  if (!acc[author]) acc[author] = [];
+  acc[author].push(model);
+  return acc;
+}, {} as Record<string, typeof models>);
+
+const datasetsByAuthor = datasets.reduce((acc, dataset) => {
+  const author = dataset.author || 'Unknown';
+  if (!acc[author]) acc[author] = [];
+  acc[author].push(dataset);
+  return acc;
+}, {} as Record<string, typeof datasets>);
+
+// Sort authors alphabetically and ensure consistent order
+const sortedGithubAuthors = Object.entries(githubByAuthor)
+  .sort(([a], [b]) => a.localeCompare(b));
+
+const sortedModelAuthors = Object.entries(modelsByAuthor)
+  .sort(([a], [b]) => a.localeCompare(b));
+
+const sortedDatasetAuthors = Object.entries(datasetsByAuthor)
+  .sort(([a], [b]) => a.localeCompare(b));
+---
+
+<Layout>
+  <section class="not-prose px-4 max-w-7xl mx-auto">
+    <h1 class="mb-6 text-3xl md:text-4xl font-semibold tracking-tight mt-12">Projects</h1>
+    
+    {/* GitHub Projects by Author */}
+    {sortedGithubAuthors.map(([author, authorProjects]) => (
+      authorProjects.length > 0 && (
+        <section class="mb-12">
+          <h2 class="text-2xl md:text-3xl font-medium mb-6 text-zinc-900 dark:text-zinc-100">
+            {author}'s github projects
+          </h2>
+          <ul class="grid gap-6 grid-cols-1 lg:grid-cols-2 w-full">
+            {authorProjects.map(project => (
+              <ProjectCard {...project} />
+            ))}
+          </ul>
+        </section>
+      )
+    ))}
+
+    {/* Hugging Face Models by Author */}
+    {sortedModelAuthors.map(([author, authorModels]) => (
+      authorModels.length > 0 && (
+        <section class="mb-12">
+          <h2 class="text-2xl md:text-3xl font-medium mb-6 text-zinc-900 dark:text-zinc-100">
+            {author}'s huggingface models
+          </h2>
+          <ul class="grid gap-6 grid-cols-1 lg:grid-cols-2 w-full">
+            {authorModels.map(model => (
+              <ProjectCard {...model} />
+            ))}
+          </ul>
+        </section>
+      )
+    ))}
+
+    {/* Hugging Face Datasets by Author */}
+    {sortedDatasetAuthors.map(([author, authorDatasets]) => (
+      authorDatasets.length > 0 && (
+        <section class="mb-12">
+          <h2 class="text-2xl md:text-3xl font-medium mb-6 text-zinc-900 dark:text-zinc-100">
+            {author}'s huggingface datasets
+          </h2>
+          <ul class="grid gap-6 grid-cols-1 lg:grid-cols-2 w-full">
+            {authorDatasets.map(dataset => (
+              <ProjectCard {...dataset} />
+            ))}
+          </ul>
+        </section>
+      )
+    ))}
+  </section>
+</Layout>
+```
+
+## Page: models.astro
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+import ModelCard from '../components/ModelCard.astro';
+import models from '../assets/hf_models.json';
+import type { HFModel } from '../types';
+
+// Type assertion and validation
+const validModels = (Array.isArray(models) ? models : []) as HFModel[];
+---
+
+<Layout>
+  <div>
+    <h1>Models</h1>
+    <div>
+      {validModels.length > 0 ? (
+        validModels.map((model: HFModel) => (
+          <ModelCard 
+            // @ts-ignore
+            id={model.id || ''}
+            // @ts-ignore
+            title={model.title || ''}
+            // @ts-ignore
+            description={model.description || ''}
+            // @ts-ignore
+            url={model.url || ''}
+            // @ts-ignore
+            author={model.author || ''}
+            // @ts-ignore
+            lastModified={model.lastModified || ''} 
+            // @ts-ignore
+            model_type={model.model_type || ''}
+            // @ts-ignore
+            base_model={model.base_model || []}
+          />
+        ))
+      ) : (
+        <p>No models available.</p>
+      )}
+    </div>
+  </div>
+</Layout> 
+```
+
+## Page: index.astro
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+import { Image } from 'astro:assets';
+import memoji from '../assets/memoji.png';
+import { getCollection } from 'astro:content';
+import ProjectCard from '../components/ProjectCard.astro';
+import { formatDate } from '../utils';
+import githubProjects from '../assets/github.json';
+import hfModels from '../assets/hf_models.json';
+import hfDatasets from '../assets/hf_datasets.json';
+import type { HFModel, HFDataset } from '../types';
+
+// Type assertions and validation
+const validModels = (Array.isArray(hfModels) ? hfModels : []) as HFModel[];
+const validDatasets = (Array.isArray(hfDatasets) ? hfDatasets : []) as HFDataset[];
+
+// Get latest blog posts
+const posts = await getCollection('blog');
+const latestPosts = posts
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 4);
+
+// Get latest items
+const latestModels = validModels
+  .slice(0, 3)
+  .map((model: HFModel) => ({
+    title: model.title || '',
+    description: model.description || '',
+    url: model.url || '',
+    lastModified: model.lastModified || '',
+    author: model.author || '',
+    base_model: model.base_model || []
+  }));
+
+const latestDatasets = validDatasets
+  .slice(0, 3)
+  .map((dataset: HFDataset) => ({
+    title: dataset.title || '',
+    url: dataset.url || '',
+    lastModified: dataset.lastModified || '',
+    author: dataset.author || ''
+  }));
+
+// Combine all projects from different sources
+// @ts-ignore
+const allProjects = [
+  ...githubProjects.map(project => ({
+    ...project,
+    source: 'github'
+  })),
+  ...hfModels.map(model => ({
+    // @ts-ignore 
+    title: model.title,
+    // @ts-ignore
+    description: model.description,
+    // @ts-ignore
+    url: model.url,
+    // @ts-ignore
+    lastModified: model.lastModified,
+    // @ts-ignore
+    author: model.author,
+    // @ts-ignore
+    base_model: model.base_model,
+    source: 'huggingface-model'
+  })),
+  ...hfDatasets.map(dataset => ({
+    // @ts-ignore
+    title: dataset.title,
+    // @ts-ignore
+    url: dataset.url,
+    // @ts-ignore
+    lastModified: dataset.lastModified,
+    // @ts-ignore
+    author: dataset.author,
+    source: 'huggingface-dataset'
+  }))
+]
+.filter(project => project.title && !project.title.includes('.github.io'))
+.sort((a, b) => new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime())
+.slice(0, 3);
+
+// More detailed logging
+// console.log('Combined projects:', allProjects);
+// console.log('Projects length:', allProjects.length);
+---
+
+<Layout>
+  <!-- Hero Section -->
+  <section class="py-12 md:py-16">
+    <div class="flex items-center gap-6 mb-8">
+      <h1 class="text-4xl md:text-5xl font-bold">
+        Hi there 👋, I'm 
+        <a href="/about" class="underline decoration-zinc-400 hover:decoration-zinc-700 dark:decoration-zinc-300 dark:hover:decoration-white decoration-2 ">dong4j</a><img src="https://media.giphy.com/media/12oufCB0MyZ1Go/giphy.gif" width="50">
+      </h1>
+    </div>
+    <p class="text-xl md:text-2xl text-zinc-700 dark:text-zinc-300 max-w-2xl">
+      I'm a software engineer passionate about AI, decentralization, privacy and open source.
+      On this site, I share my thoughts, projects, and experiments.
+    </p>
+  </section>
+
+  <!-- Featured Blog Posts -->
+  <section class="py-8">
+    <h2 class="text-2xl md:text-3xl font-semibold mb-6">Latest Posts</h2>
+    <div class="grid gap-6 md:grid-cols-2">
+      {latestPosts.map(post => (
+        <a 
+          href={`/blog/${post.slug}`}
+          class="group p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-orange-50/30 dark:bg-zinc-800/30 hover:bg-orange-50 dark:hover:bg-zinc-800"
+        >
+          <span class="text-sm text-zinc-600 dark:text-zinc-400">
+            {formatDate(post.data.pubDate)}
+          </span>
+          <h3 class="text-xl font-medium mt-2">
+            {post.data.title}
+          </h3>
+          <p class="text-zinc-600 dark:text-zinc-400 line-clamp-2 mt-2">
+            {post.data.description}
+          </p>
+        </a>
+      ))}
+    </div>
+    <a 
+      href="/blog" 
+      class="inline-block mt-6 hover:underline"
+    >
+      View all posts →
+    </a>
+  </section>
+
+  <!-- Featured Projects -->
+  {allProjects.length > 0 && (
+    <section class="py-8">
+      <h2 class="text-2xl md:text-3xl font-semibold mb-6">Latest Projects</h2>
+      <div class="grid gap-6 md:grid-cols-3">
+        {allProjects.map(project => (
+          <ProjectCard {...project} />
+        ))}
+      </div>
+      <a 
+        href="/projects" 
+        class="inline-block mt-6 hover:underline"
+      >
+        View all projects →
+      </a>
+    </section>
+  )}
+
+  <!-- Quick Links -->
+  <section class="py-8">
+    <h2 class="text-2xl md:text-3xl font-semibold mb-6">Connect</h2>
+    <div class="flex gap-4 text-zinc-600 dark:text-zinc-400">
+      <a 
+        href="/rss.xml" 
+        class="hover:text-orange-600 dark:hover:text-orange-400"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        RSS
+      </a>
+      <span>•</span>
+      <a 
+        href="https://github.com/dong4j" 
+        class="hover:text-orange-600 dark:hover:text-orange-400"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        GitHub
+      </a>
+    </div>
+  </section>
+
+  <!-- Latest Models -->
+  {latestModels.length > 0 && (
+    <section>
+      <h2>Latest Models</h2>
+    </section>
+  )}
+  
+  <!-- Latest Datasets -->
+  {latestDatasets.length > 0 && (
+    <section>
+      <h2>Latest Datasets</h2>
+    </section>
+  )} 
+</Layout>
+
+```
+
+## Page: datasets.astro
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+import DatasetCard from '../components/DatasetCard.astro';
+import datasets from '../assets/hf_datasets.json';
+import type { HFDataset } from '../types';
+
+// Type assertion and validation
+const validDatasets = (Array.isArray(datasets) ? datasets : []) as HFDataset[];
+---
+
+<Layout>
+  <div>
+    <h1>Datasets</h1>
+    <div>
+      {validDatasets.length > 0 ? (
+        validDatasets.map((dataset: HFDataset) => (
+          <DatasetCard 
+            // @ts-ignore 
+            id={dataset.id || ''}
+            // @ts-ignore
+            title={dataset.title || ''}
+            // @ts-ignore
+            url={dataset.url || ''}
+            // @ts-ignore
+            author={dataset.author || ''}
+            // @ts-ignore
+            lastModified={dataset.lastModified || ''}
+          />
+        ))
+      ) : (
+        <p>No datasets available.</p>
+      )}
+    </div>
+  </div>
+</Layout> 
+```
+
+## Page: about.astro
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+import { Image } from 'astro:assets';
+import { Icon } from 'astro-icon/components'
+import profile from '../assets/profile.png';
+import socialLinks from '../assets/social.json';
+
+// Add these constants (you can also move them to src/consts.ts)
+const APPLE_MAPS_URL = "maps://?address=China,chengdu";
+const APPLE_MAPS_WEB_URL = "https://beta.maps.apple.com/?address=chengdu%2CChina&t=h";
+
+// You can move these to a separate data file if preferred
+const publications = [
+  {
+    title: "Study on the contribution of federated learning to autonomous driving",
+    date: "2022",
+    description: "An internship report on the contribution of federated learning to autonomous driving done at the University of Nice Sophia Antipolis and the I3S / CNRS laboratory.",
+    url: "/about",
+    type: "paper"
+  },
+  // Add more publications
+];
+
+const podcastAppearance = [
+  {
+    title: "Témoignage : comment remplir ses anneaux d'Apple Watch pendant 365 jours",
+    show: "MacGeneration / WatchGeneration", 
+    type: "article",
+    date: "2024",
+    links: [
+      { platform: "Web", url: "https://www.watchgeneration.fr/sport/2024/02/temoignage-comment-remplir-ses-anneaux-dapple-watch-pendant-365-jours-16301", icon: "mdi:web" },
+    ]
+  },
+  {
+    title: "Erdal: The Case For Micro Apps",
+    show: "Nostrovia",
+    type: "podcast",
+    date: "2023", 
+    links: [
+      { platform: "Apple Podcasts", url: "https://podcasts.apple.com/fr/podcast/nostrovia-the-original-nostr-podcast/id1678531266?i=1000605372568", icon: "mdi:apple" },
+      { platform: "Spotify", url: "https://open.spotify.com/episode/7bUnsCqJgzjezwoIwdRee2", icon: "mdi:spotify" },
+      { platform: "Web", url: "https://creators.spotify.com/pod/show/nostrovia/episodes/Erdal-The-Case-For-Micro-Apps-e1vi0af", icon: "mdi:web" },
+    ]
+  }
+];
+---
+
+<Layout>
+  <article class="max-w-4xl mx-auto mt-12">
+    <!-- Hero Section -->
+    <section class="mb-12">
+      <div class="flex flex-col md:flex-row items-center gap-8 mb-8">
+        <Image
+          src={profile}
+          alt="dong4j"
+          class="rounded-full w-32 h-32 md:w-40 md:h-40"
+        />
+        <div>
+          <h1 class="text-3xl md:text-4xl font-bold mb-4">About Me</h1>
+          <p class="text-xl text-zinc-700 dark:text-zinc-300">
+            Software engineer passionate about AI, decentralization, privacy and open source.
+          </p>
+          <a
+            id="mapLink"
+            href={APPLE_MAPS_WEB_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center mt-2 text-zinc-800 dark:text-zinc-300 hover:text-zinc-600 dark:hover:text-zinc-200"
+          >
+            <Icon name="mdi:map-marker" class="w-5 h-5 mr-1" />
+            <span>China,chengdu</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Connect Section -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-6">Connect</h2>
+      <div class="flex flex-wrap gap-4">
+        {socialLinks.map((link) => (
+          <a
+            href={link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={link.name}
+            class="p-3 rounded-lg bg-orange-50/30 dark:bg-zinc-800/30 border border-zinc-200 dark:border-zinc-800 hover:bg-orange-50 dark:hover:bg-zinc-800"
+          >
+            <Icon name={link.icon} class="w-5 h-5" />
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Publications Section -->
+    <!-- <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-6">Publications</h2>
+      <div class="space-y-4">
+        {publications.map(pub => (
+          <a href={pub.url}>
+            <div class="p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-orange-50/30 dark:bg-zinc-800/30 hover:bg-orange-50 dark:hover:bg-zinc-800">
+              <h3 class="text-xl font-semibold mb-2">{pub.title}</h3>
+              <p class="text-zinc-600 dark:text-zinc-400 mb-3">{pub.description}</p>
+              <div class="flex items-center gap-2">
+                <span class="text-sm text-zinc-500">{pub.date}</span>
+                <div class="flex items-center gap-1">
+                  <Icon name="mdi:pdf-box" class="w-5 h-5" />
+                </div>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section> -->
+
+    <!-- Podcast Section -->
+    <!-- <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-6">Appearances</h2>
+      <div class="space-y-4">
+        {podcastAppearance.map(podcast => (
+          <div class="p-6 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-orange-50/30 dark:bg-zinc-800/30">
+            <h3 class="text-xl font-semibold mb-2">{podcast.title}</h3>
+            
+            <div class="flex flex-col sm:flex-row gap-2">
+              {podcast.links.map(link => (
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex items-center pr-4 py-2 rounded-md hover:bg-orange-50 dark:hover:bg-zinc-800 flex-1"
+                >
+                  <Icon name={link.icon} class="w-5 h-5 min-w-[1.25rem]" />
+                  <span class="ml-2">{podcast.type === 'article' ? 'Read on' : 'Listen on'} {link.platform}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section> -->
+  </article>
+</Layout>
+
+<script define:vars={{ APPLE_MAPS_URL }}>
+  // Check if the user is on an Apple device
+  const isAppleDevice = /Mac|iPhone|iPod|iPad/.test(navigator.userAgent);
+  const mapLink = document.getElementById('mapLink');
+  
+  if (isAppleDevice && mapLink) {
+    mapLink.href = APPLE_MAPS_URL;
+  }
+</script>
+
+```
+
+## Page: blog/index.astro
+```astro
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+
+interface PostsByYear {
+  [key: number]: CollectionEntry<'blog'>[];
+}
+
+// Get all unique post types
+const posts = await getCollection('blog');
+const postTypes = ['all', ...new Set(posts.map(post => post.data.type).filter(Boolean))];
+
+const postsByYear = posts.reduce<PostsByYear>((acc, post) => {
+  const year = new Date(post.data.pubDate).getFullYear();
+  if (!acc[year]) acc[year] = [];
+  acc[year].push(post);
+  return acc;
+}, {});
+
+// Sort years in descending order
+const sortedYears = Object.keys(postsByYear).map(Number).sort((a, b) => b - a);
+
+// Function to format date as "25 Jan"
+const formatDate = (date: Date): string => {
+  return date.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short'
+  });
+};
+---
+
+<Layout>
+  <section class="mt-8">
+    <!-- Type filter -->
+    <div class="flex gap-4 mb-8">
+      {postTypes.map(type => {
+        const isActive = type === 'all';
+        const href = type === 'all' ? '/blog' : `/blog/${type}`;
+        return (
+          <a
+            href={href}
+            class={`px-3 py-1.5 rounded-lg text-sm ${
+              isActive
+                ? 'bg-zinc-800 text-white dark:bg-zinc-100 dark:text-black'
+                : 'text-zinc-800 hover:bg-orange-50 border border-black dark:border-white dark:text-zinc-100 dark:hover:bg-zinc-800'
+            }`}
+            aria-current={isActive ? 'page' : undefined}
+          >
+            {typeof type === 'string' ? type.charAt(0).toUpperCase() + type.slice(1) : type}
+          </a>
+        );
+      })}
+    </div>
+
+    {sortedYears.map(year => (
+      <div class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4">{year}</h2>
+        <ul class="space-y-2">
+          {postsByYear[year]
+            .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())
+            .map((post) => (
+              <li>
+                <a href={`/blog/${post.slug}/`} class="group grid grid-cols-[100px_1fr] sm:flex sm:gap-4 text-inherit no-underline">
+                  <time datetime={new Date(post.data.pubDate).toISOString()} 
+                        class="text-zinc-500 dark:text-zinc-400 sm:w-[100px] shrink-0">
+                    {formatDate(new Date(post.data.pubDate))}
+                  </time>
+                  <span class="group-hover:underline">{post.data.title}</span>
+                </a>
+              </li>
+            ))}
+        </ul>
+      </div>
+    ))}
+  </section>
+</Layout>
+```
+
+## Page: blog/[type].astro
+```astro
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+
+interface PostsByYear {
+  [key: number]: CollectionEntry<'blog'>[];
+}
+
+export function getStaticPaths() {
+  return [
+    { params: { type: 'articles' } },
+    { params: { type: 'notes' } },
+  ];
+}
+
+const { type } = Astro.params;
+
+// Get all unique post types
+const posts = await getCollection('blog');
+const postTypes = ['all', ...new Set(posts.map(post => post.data.type).filter(Boolean))];
+
+// Filter posts by type and group by year
+const filteredPosts = posts.filter(post => post.data.type === type);
+
+const postsByYear = filteredPosts.reduce<PostsByYear>((acc, post) => {
+  const year = new Date(post.data.pubDate).getFullYear();
+  if (!acc[year]) acc[year] = [];
+  acc[year].push(post);
+  return acc;
+}, {});
+
+// Sort years in descending order
+const sortedYears = Object.keys(postsByYear).map(Number).sort((a, b) => b - a);
+
+// Function to format date as "25 Jan"
+const formatDate = (date: Date): string => {
+  return date.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short'
+  });
+};
+---
+
+<Layout>
+  <section class="mt-8">
+    <!-- Type filter -->
+    <div class="flex gap-4 mb-8">
+      {postTypes.map(postType => {
+        const isActive = type === postType;
+        const href = postType === 'all' ? '/blog' : `/blog/${postType}`;
+        return (
+          <a
+            href={href}
+            class={`px-3 py-1.5 rounded-lg text-sm ${
+              isActive
+                ? 'bg-zinc-800 text-white dark:bg-zinc-100 dark:text-black'
+                : 'text-zinc-800 hover:bg-orange-50 border border-black dark:border-white dark:text-zinc-100 dark:hover:bg-zinc-800'
+            }`}
+            aria-current={isActive ? 'page' : undefined}
+          >
+            {typeof postType === 'string' ? postType.charAt(0).toUpperCase() + postType.slice(1) : postType}
+          </a>
+        );
+      })}
+    </div>
+
+    {/* Show message if no posts match the filter */}
+    {filteredPosts.length === 0 ? (
+      <p class="text-zinc-600 dark:text-zinc-400">No posts found for this filter.</p>
+    ) : (
+      sortedYears.map(year => (
+        <div class="mb-8">
+          <h2 class="text-2xl font-semibold mb-4">{year}</h2>
+          <ul class="space-y-2">
+            {postsByYear[year]
+              .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())
+              .map((post) => (
+                <li>
+                  <a href={`/blog/${post.slug}/`} class="group grid grid-cols-[100px_1fr] sm:flex sm:gap-4 text-inherit no-underline">
+                    <time datetime={new Date(post.data.pubDate).toISOString()} 
+                          class="text-zinc-500 dark:text-zinc-400 sm:w-[100px] shrink-0">
+                      {formatDate(new Date(post.data.pubDate))}
+                    </time>
+                    <span class="group-hover:underline">{post.data.title}</span>
+                  </a>
+                </li>
+              ))}
+          </ul>
+        </div>
+      ))
+    )}
+  </section>
+</Layout> 
+```
+
+## Page: blog/[...slug].astro
+```astro
+---
+import { type CollectionEntry, getCollection } from 'astro:content';
+import BlogPost from '../../layouts/LayoutBlog.astro';
+import { Image } from 'astro:assets';
+
+export async function getStaticPaths() {
+	const posts = await getCollection('blog');
+	return posts.map((post) => ({
+		params: { slug: post.slug },
+		props: post,
+	}));
+}
+
+const post = Astro.props;
+const { Content } = await post.render();
+
+// Get the processed image URL from the heroImage
+const heroImage = post.data.heroImage;
+---
+
+<BlogPost {...post.data} heroImage={heroImage} type="blog">
+	<h1>{post.data.title}</h1>
+	<Content />
+</BlogPost>
+
+<script>
+  // Add target="_blank" to all links after the page loads
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('article a').forEach(link => {
+      link.setAttribute('target', '_blank');
+      link.setAttribute('rel', 'noopener noreferrer');
+    });
+  });
+</script>
+
+```
+
+## Blog Post: hello-world.md
+
+Frontmatter:
+```yaml
+---
+title: Hello World
+pubDate: '2021-01-01'
+description: First blog post
+author: dong4j
+heroImage: ../../assets/blog/1/banner.jpg
+type: articles
+id: 1
+---
+```
+
+Content:
+
+![Banner](../../assets/blog/1/banner.jpg)
+
+< Hello World! >
