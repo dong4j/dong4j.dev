@@ -1,5 +1,15 @@
 [
   {
+    "title": "dong4j.dev",
+    "description": "Personal website built with Astro and deployed on Cloudflare Pages. Features a blog, project showcase, and integration with GitHub and Hugging Face APIs.",
+    "url": "https://github.com/dong4j/dong4j.dev",
+    "demo": "",
+    "post": "",
+    "lastModified": "2025-02-14T05:43:47Z",
+    "author": "dong4j",
+    "license": "MIT License"
+  },
+  {
     "title": "dong4j",
     "description": "",
     "url": "https://github.com/dong4j/dong4j",
@@ -86,7 +96,7 @@
   },
   {
     "title": "coai",
-    "description": "🚀 Next Generation AI One-Stop Internationalization Solution. 🚀 下一代 AI 一站式 B/C 端解决方案，支持 OpenAI，Midjourney，Claude，讯飞星火，Stable Diffusion，DALL·E，ChatGLM，通义千问，腾��混元，360 智脑，百川 AI，火山方舟，新必应，Gemini，Moonshot 等模型，支持对话分享，自定义预设，云端同步，模型市场，支持弹性计费和订阅计划模式，支持图片解析，支持联网搜索，支持模型缓存，丰富美观的后台管理与仪表盘数据统计。",
+    "description": "🚀 Next Generation AI One-Stop Internationalization Solution. 🚀 下一代 AI 一站式 B/C 端解决方案，支持 OpenAI，Midjourney，Claude，讯飞星火，Stable Diffusion，DALL·E，ChatGLM，通义千问，腾讯��元，360 智脑，百川 AI，火山方舟，新必应，Gemini，Moonshot 等模型，支持对话分享，自定义预设，云端同步，模型市场，支持弹性计费和订阅计划模式，支持图片解析，支持联网搜索，支持模型缓存，丰富美观的后台管理与仪表盘数据统计。",
     "url": "https://github.com/dong4j/coai",
     "demo": "https://coai.dev",
     "post": "",
@@ -214,7 +224,7 @@
   },
   {
     "title": "exceltool",
-    "description": "一个使用 JavaFX 写的操作 excel 的小工具",
+    "description": "一个使用 JavaFX 写的操作 excel ���小工具",
     "url": "https://github.com/dong4j/exceltool",
     "demo": "",
     "post": "",
@@ -361,16 +371,6 @@
     "post": "",
     "lastModified": "2020-05-10T15:16:21Z",
     "author": "dong4j"
-  },
-  {
-    "title": "JustAuth",
-    "description": ":100: 史上最全的整合第三方登录的开源库。目前已支持Github、Gitee、微博、钉钉、百度、Coding、腾讯云开发者平台、OSChina、支付宝、QQ、微信、淘宝、Google、Facebook、抖音、领英、小米、微软、今日头条、Teambition、StackOverflow、Pinterest、人人、华为、企业微信、酷家乐、Gitlab、美团、饿了么和推特等第三方平台的授权登录。 Login, so easy!",
-    "url": "https://github.com/dong4j/JustAuth",
-    "demo": "https://docs.justauth.whnb.wang",
-    "post": "",
-    "lastModified": "2020-05-09T12:37:38Z",
-    "author": "dong4j",
-    "license": "MIT License"
   },
   {
     "title": "intellij-spring-assistant",
@@ -602,7 +602,7 @@
   },
   {
     "title": "EasyCode",
-    "description": "���于IntelliJ IDEA开发的代码生成插件，支持自定义任意模板（Java，html，js，xml）。只要是与数据库相关的代码都可以通过自定义模板来生成。支持数据库类型与java类型映射关系配置。支持同时生成生成多张表的代码。每张表有独立的配置信息。完全的个性化定义，规则由你设置。",
+    "description": "基于IntelliJ IDEA开发的代码生成插件，支持自定义任意模板（Java，html，js，xml）。只要是与数据库相关的代码都可以通过自定义模板来生成。支持数据库类型与java类型映射关系配置。支持同时生成生成多张表的代码。每张表有独立的配置信息。完全的个性化定义，规则由你设置。",
     "url": "https://github.com/dong4j/EasyCode",
     "demo": "",
     "post": "",

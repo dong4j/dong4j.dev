@@ -63,6 +63,17 @@ pnpm build
 - **Comments**: Powered by Utterances
 - **SEO Friendly**: Optimized for search engines
 
+## Cloudflare Pages Deployment
+
+https://docs.astro.build/zh-cn/guides/deploy/cloudflare/
+
+
+```bash
+npm install -g wrangler
+wrangler login
+npm run build && npx wrangler pages deploy dist
+```
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
